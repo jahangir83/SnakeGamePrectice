@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Snake Game</title>
+</head>
+<style>
+    body{
+        text-align: center;
+    }
+    .game{
+        width: 400px;
+        height: 400px;
+      margin: auto;
+    }
+    #gameCanvas{
+        /* margin: auto; */
+        width: 100%;
+        height: 100%;
+    }
+    .score{
+        text-align: center;
+        font-size: 144px;
+    }
+    .button{
+        padding: 5px;
+        width: auto;
+        margin: 5px;
+        background: green;
+        color: #fff;
+        font-size: 20px;
+    }
+</style>
+<body>
+    <h1>Creare Snake Game</h1>
+     <div class="score" id="score">0</div>
+   <div class="game">
+       <button class="button" onclick="start()"> Game Start</button>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+   </div>
+    
+
+
+    <!-- Start Script Code -->
+    <script>
+        function start(){
+        let snakebord = document.getElementById("gameCanvas")
+        let snakebord_cxt  = snakebord.getContext("2d")
+
+
+        //writer variable Start
+
+        let snake = [  {x: 200, y: 200},  {x: 190, y: 200},  {x: 180, y: 200},  {x: 170, y: 200},  {x: 160, y: 200},];
+        const board_border = 'black';
+        const board_background = "white";
+        const snake_col = 'lightblue';
+        const snake_border = 'darkblue';
+
+        let dx = 10;
+        let dy = 0
+        let score = 0
+
+
+        //write variable End
+
+        //Clear bord
+        function clear_bord(){
+            snakebord_cxt.fillStyle = board_background
+            snakebord_cxt.strokeStyle = board_border
+            snakebord_cxt.fillRect(0,0, snakebord.width, snakebord.height)
+            snakebord_cxt.strokeRect(0, 0, snakebord.width, snakebord.height)
+
+        }
+        
+        //Draw snake function
+        function drawSnakepart(snakepart){
+            //boder 
+            snakebord_cxt.fillStyle =  snake_border
+            snakebord_cxt.strokeStyle = snake_col
+
+            snakebord_cxt.fillRect(snakepart.x, snakepart.y, 10, 10)
+            snakebord_cxt.strokeRect(snakepart.x, snakepart.y, 10, 10)
+        }
+
+        //Drawsnake iterate function
+        function drawsnake(){
+            snake.forEach(drawSnakepart)
+        }
+    
+        //Move Snake
+        function move_snake(){
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy}
+
+            snake.unshift(head)
+            const has_eaten_food = snake[0].x === food_x && snake[0].y === food_y
+            if(has_eaten_food){
+                score += 10
+                document.getElementById("score").innerHTML = score
+                green_food()
+            }
+            snake.pop()
+        }
+
+        //has_Game _End
+        function has_game_ended(){
+            for(let i = 4; i < snake.length; i++){
+                if(snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true
+            };
+            const hitLeftWall = snake[0].x < 0;
+            const hitRightWall = snake[0].x > snakebord.width - 10
+            const hitTopWall = snake[0].y < 0;
+            const hitBottomWall = snake[0].y > snakebord.height - 10;
+            return hitLeftWall || hitRightWall ||hitTopWall|| hitBottomWall
+        }
+
+        //changing Rirection
+        let changin_direction = false
+        document.addEventListener('keydown', chahe_direction)
+        function chahe_direction(even){
+            const LEFT_KEY = 37;
+            const RIGHT_KEY = 39;
+            const UP_KEY = 38; 
+            const DOWN_KEY = 40;
+
+            //
+            if(changin_direction) return
+            changin_direction = true
+            const keyPressed = even.keyCode
+            const goingUp = dy === -10
+            const goingDown = dy === 10
+            const goingLeft = dx === 10
+            const goingRight = dx  === - 10
+
+            if(keyPressed === LEFT_KEY && !goingRight){
+                dx = - 10;
+                dy = 0
+            }
+            if(keyPressed == RIGHT_KEY && !goingLeft){
+                dx = 10
+                dy = 0
+            }
+            if (keyPressed === UP_KEY && !goingDown) {
+                dx = 0;
+                dy = -10;
+            }
+            if (keyPressed === DOWN_KEY && !goingUp) {
+                dx = 0;
+                dy = 10;
+            }
+        }
+
+        //Food Start
+        let food_x;
+        let food_y;
+
+        function deawFood(){
+            snakebord_cxt.fillStyle = 'lightgreen'
+            snakebord_cxt.strokeStyle = 'darkgreen'
+            snakebord_cxt.fillRect(food_x, food_y, 10, 10)
+            snakebord_cxt.strokeRect(food_x, food_y, 10, 10)
+        }
+        //Random function
+        function random_food(min , max){
+            return Math.round((Math.random() * (max - min) + min) / 10) * 10
+        }
+        //Green food
+        function green_food(){
+            food_x = random_food(0, snakebord.width - 10)
+            food_y = random_food(0, snakebord.height - 10)
+
+            snake.forEach( has_snake_eaten_food = (part) => {
+                const has_eaten = part.x == food_x && part.y == food_y
+                if(has_eaten) green_food()
+            })
+        }
+        
+        //Food End
+        
+
+
+        
+
+        function main(){
+
+            if(has_game_ended()){
+                return 
+            }
+            changin_direction = false
+            setTimeout(function (){
+                clear_bord()
+                deawFood()
+                move_snake()
+                drawsnake()
+              
+                
+                main()
+            },100)
+        }
+        main()
+        green_food()
+
+
+
+    }
+
+
+
+    </script>
+    
+</body>
+</html>
